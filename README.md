@@ -18,8 +18,13 @@ Hidden layers can represent Parkinson's Disease gene networks.
 	conda activate omics
 	jupyter-notebook --ip=127.0.0.1
 
-- Navigate to the notebooks folder when the browser opens the notebook.  Open peg.ipynb
+- Download the input data (dataset.tfrecords) and metadata (feature_dict.pkl) from 
 
-- Please contact me (garyc@caseyandgary.com) if you need dataset.tfrecords and feature_dict.pkl.  These are the input data and its metadata for the PEG1 case control omics data. These should be saved under a directory called data on the same level as notebooks.
+https://app.box.com/folder/165663162890
+
+Save these files in a folder called data located on the same level as notebooks.
+
+
+- ntact me (garyc@caseyandgary.com) if you need dataset.tfrecords and feature_dict.pkl.  These are the input data and its metadata for the PEG1 case control omics data. These should be saved under a directory called data on the same level as notebooks.
 
 
