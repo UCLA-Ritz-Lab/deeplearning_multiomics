@@ -25,6 +25,3 @@ https://app.box.com/folder/165663162890
 Save these files in a folder called data located on the same level as notebooks.
 
 
-- ntact me (garyc@caseyandgary.com) if you need dataset.tfrecords and feature_dict.pkl.  These are the input data and its metadata for the PEG1 case control omics data. These should be saved under a directory called data on the same level as notebooks.
-
-
