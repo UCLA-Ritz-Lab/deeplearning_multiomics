@@ -14,7 +14,7 @@ Hidden layers can represent Parkinson's Disease gene networks.
 
 - At this point to avoid version issues you can create a notebook environment for Tensor flow and the notebooks. From the base directory of this repo:
 
-	conda create -n omics python=3.12.2 jupyter tensorflow
+	conda create -n omics python=3.12.2 jupyter tensorflow scipy pandas matplotlib
 	conda activate omics
 	jupyter-notebook --ip=127.0.0.1
 
