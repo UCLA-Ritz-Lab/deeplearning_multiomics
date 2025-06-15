@@ -6,7 +6,7 @@ import pickle
 
 def main():
 	if len(sys.argv)<9:
-		print("Usage:  [annovar_output] [featureinfo] [pvalues] [pvalue_threshold] [maskout pickle] [row_labels pickle] [col_labels pickle] [tfrecord header]")
+		print("Usage:  [annovar_output] [featureinfo] [pvalues] [pvalue_threshold] [outfiles mask] [outfiles row_label] [outfiles col_label] [tfrecord header]")
 
 		exit(1)
 	filename_annovarout = sys.argv[1]
@@ -19,6 +19,7 @@ def main():
 	filename_header = sys.argv[8]
 
 	# load header of the large input data 
+
 	file = open(filename_header,'r')
 	headertokens = file.readline().rstrip().split(',')
 	headerset = set(headertokens)
@@ -44,8 +45,8 @@ def main():
 			old_key_dict[key] = old_key
 	file.close()
 	print("There are ",str(len(old_key_dict)),"features in the pvalue data")
-
 	# annotate featureinfo with pvalues
+
 	file = open(filename_featureinfo,'r')
 	file.readline()
 	snp_dict = {}
@@ -63,11 +64,13 @@ def main():
 	file = open(filename_annovarout,'r')
 	file.readline()
 	annotations = {}
-	annot_counter = 0
 	rowlist = []
 	collist = []
 	# first pass to get matrix columns
 	rows = 0
+	# add dummy gene
+	collist.append('none')
+	annot_counter = 1
 	for line in file:
 		linetokens = line.rstrip().split('\t')
 		position = linetokens[0]+'-'+linetokens[1]
@@ -86,13 +89,11 @@ def main():
 			rowlist.append(snp_dict[position])
 			rows+=1
 	file.close()
+
+	# second pass to make the matrix
 	print("The number of annotations is ",annot_counter)
 	print("Creating mask of ",rows," by ",annot_counter,"cols")
 	mask = np.zeros((rows,annot_counter),dtype='float32')
-	
-
-	# second pass to make the matrix
-
 	file = open(filename_annovarout,'r')
 	file.readline()
 	row = 0
@@ -104,20 +105,38 @@ def main():
 			genes = linetokens[6].split(',')
 			#print(position,function,genes)
 			genes.append(function)
+			# dummy gene
+			mask[row,0] = 1.0	
 			for gene in genes:
 				col = annotations[gene]
 				mask[row,col] = 1.0	
 			row+=1
 	file.close()
-	file = open(filename_maskout,'wb')
+	file = open(filename_maskout+'.pkl','wb')
 	pickle.dump(mask,file)
 	file.close()	
-	file = open(filename_rowsout,'wb')
+	file = open(filename_maskout+'.txt','w')
+	for row in range(mask.shape[0]):
+		for col,val in zip(range(mask.shape[1]),mask[row]):
+			if col>0:
+				file.write("\t")
+			file.write(str(val))
+		file.write('\n')
+	file.close()	
+	file = open(filename_rowsout+'.pkl','wb')
 	pickle.dump(rowlist,file)
 	file.close()	
-	file = open(filename_colsout,'wb')
+	file = open(filename_rowsout+'.txt','w')
+	for val in rowlist:
+		file.write(val+'\n')
+	file.close()
+	file = open(filename_colsout+'.pkl','wb')
 	pickle.dump(collist,file)
 	file.close()	
+	file = open(filename_colsout+'.txt','w')
+	for val in collist:
+		file.write(val+'\n')
+	file.close()
 
 if __name__=='__main__':
 	main()
