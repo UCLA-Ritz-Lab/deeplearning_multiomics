@@ -5,13 +5,16 @@ import numpy as np
 import pickle
 
 def main():
-	if len(sys.argv)<4:
-		print("Usage: [pathwaydef] [genelist] ")
+	if len(sys.argv)<6:
+		print("Usage: [pathwaydef] [genelist] [outfiles mask] [outfiles row_label] [outfiles_col_label]")
 		exit(1)
 
 	filename_pathwaydef = sys.argv[1]
 	filename_genelist = sys.argv[2]
 	filename_maskout = sys.argv[3]
+	filename_rowsout = sys.argv[4]
+	filename_colsout = sys.argv[5]
+
 
 	# load header of the large input data 
 
@@ -19,6 +22,8 @@ def main():
 	file.readline()
 	col_by_pathway = {}
 	col_by_pathway['none'] = 0
+	collist = []
+	collist.append('none')
 	pathwaycount = 1
 	pathways_by_gene = {}
 	for line in file:
@@ -26,6 +31,7 @@ def main():
 		pathway = tokens[0]
 		col_by_pathway[pathway] = pathwaycount
 		pathwaycount+=1
+		collist.append(pathway)
 		genes = tokens[3].split(',')
 		#print(pathway,genes)
 		for gene in genes:
@@ -48,7 +54,16 @@ def main():
 		col = col_by_pathway[pathway]
 		#print('pathway:',pathway,', col:',col)
 
-	mask = np.zeros((len(pathways_by_gene),pathwaycount),dtype='float32')
+	# pass 1 to get the number of genes in the input list
+	file = open(filename_genelist,'r')
+	row = 0
+	rowlist = []
+	for line in file:
+		gene = line.rstrip()
+		rowlist.append(gene)
+	file.close()
+	mask = np.zeros((len(rowlist),pathwaycount),dtype='float32')
+
 	file = open(filename_genelist,'r')
 	row = 0
 	for line in file:
@@ -72,6 +87,23 @@ def main():
 			file.write(str(val))
 		file.write('\n')
 	file.close()
+
+	file = open(filename_rowsout+'.pkl','wb')
+	pickle.dump(rowlist,file)
+	file.close()    
+	file = open(filename_rowsout+'.txt','w')
+	for val in rowlist:
+		file.write(val+'\n')
+	file.close()
+
+	file = open(filename_colsout+'.pkl','wb')
+	pickle.dump(collist,file)
+	file.close()     
+	file = open(filename_colsout+'.txt','w')
+	for val in collist:
+		file.write(val+'\n')
+	file.close()
+
 	
 	
 if __name__=='__main__':
